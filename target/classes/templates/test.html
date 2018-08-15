@@ -138,21 +138,27 @@
     }
 
     function del(empId) {
-        alert(empId)
-        var data = {"empId":empId};
-        console.log(data)
-        $.ajax({
-            url: "/delEmp",
-            type: "post",
-            dataType: "json",
-            data: data,
-            async: false,
-            success: function (data) {
-                if (data == '1') {
-                    location.href="/test";
+        layer.confirm('确定要删除这条信息吗？',{
+          btn:['确定','取消']
+        },function(){
+            var data = {"empId":empId};
+            console.log(data)
+            $.ajax({
+                url: "/delEmp",
+                type: "post",
+                dataType: "json",
+                data: data,
+                async: false,
+                success: function (data) {
+                    if (data == '1') {
+                        location.href="/test";
+                    }
                 }
-            }
-        });
+            });
+        },function(){
+
+        })
+
     }
 </script>
 </html>
