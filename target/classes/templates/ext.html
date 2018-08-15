@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html class="no-focus" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"></meta>
+    <title>测试ext</title>
+</head>
+<link rel="stylesheet" type="text/css" th:href="@{/js/ext-all.css}" />
+<script type="text/javascript" th:src="@{/js/adapter/ext-base.js}"></script>
+<script type="text/javascript" th:src="@{/js/ext-all.js}"></script>
+<script th:src="@{/jquery/version/jquery-1.12.4.min.js}" src="../static/jquery/version/jquery-1.12.4.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+Ext.onReady(function () {
+    //初始化标签中的Ext:Qtip属性。
+   Ext.QuickTips.init();
+    Ext.form.Field.prototype.msgTarget = 'side';
+    //提交按钮处理方法
+                 var btnsubmitclick = function () {
+                      Ext.MessageBox.alert('提示', '你点了确定按钮!');
+                }
+             //重置按钮"点击时"处理方法
+              var btnresetclick = function () {
+                     Ext.MessageBox.alert('提示', '你点了重置按钮!');
+                 }
+            //重置按钮"鼠标悬停"处理方法
+             var btnresetmouseover = function () {
+                     Ext.MessageBox.alert('提示', '你鼠标悬停在重置按钮之上!');
+                 }
+              //提交按钮
+              var btnsubmit = new Ext.Button({
+                       text: '提交',
+                      handler: btnsubmitclick
+               });
+               //重置按钮
+              var btnreset = new Ext.Button({
+                     text: '重置',
+                        listeners: {
+                          'mouseover': btnresetmouseover,
+                              'click': btnresetclick
+                     }
+               });
+     //用户名input
+   var txtusername = new Ext.form.TextField({
+  width: 140,
+        allowBlank: false,
+       maxLength: 20,
+       name: 'username',
+        fieldLabel: '用户名称',
+        blankText: '请输入用户名',
+         maxLengthText: '用户名不能超过20个字符'
+      });
+     //密码input
+    var txtpassword = new Ext.form.TextField({
+                  width: 140,
+             allowBlank: false,
+                       maxLength: 20,
+                       inputType: 'password',
+                      name: 'password',
+                       fieldLabel: '密码',
+                      blankText: '请输入密码',
+                      maxLengthText: '密码不能超过20个字符'
+                });
+    //验证码input
+                 var txtcheckcode = new Ext.form.TextField({
+                       fieldLabel: '验证码',
+                       id: 'checkcode',
+                      allowBlank: false,
+                         width: 76,
+                       blankText: '请输入验证码！',
+                        maxLength: 4,
+                         maxLengthText: '验证码不能超过4个字符!'
+                });
+    var combostore =  Ext.create('Ext.data.Store', {
+                       fields: ['id', 'name'],
+                      data: [[1, '团员'], [2, '党员'], [3, '其他']]
+                });
+    var combobox = new Ext.form.ComboBox({
+                       fieldLabel: '政治面貌',
+                       store: combostore,
+                        displayField: 'name',
+                        valueField: 'id',
+                       triggerAction: 'all',
+                       emptyText: '请选择...',
+                       allowBlank: false,
+                       blankText: '请选择政治面貌',
+                       editable: false,
+                        mode: 'local'
+                 });
+            var datefield = new Ext.form.DateField({
+                fieldLabel: '出生日期',
+                format: 'Y-m-d',
+                editable: false,
+                allowBlank: false,
+                blankText: '请选择日期'});
+                     //表单
+                 var form = new Ext.form.FormPanel({
+                         frame: true,
+                       title: '表单测试',
+                         style: 'margin:10px',
+                        /* html: '<div style="padding:10px">这里表单内容</div>',*/
+                        items: [txtusername, txtpassword,txtcheckcode,datefield,combobox],
+                     buttons: [btnsubmit, btnreset]
+                });
+                //窗体
+                var win = new Ext.Window({
+                         title: '窗口',
+                         width: 476,
+                        height: 374,
+                       /* html: '<div>这里是窗体内容</div>',*/
+                         resizable: true,
+                         modal: true,
+                        closable: true,
+                         maximizable: true,
+                        minimizable: true,
+                         items: form
+               });
+                win.show();
+             });
+</script>
+<body>
+<div id="test">
+    hello,world!!!!
+</div>
+</body>
+</html>

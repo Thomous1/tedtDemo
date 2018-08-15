@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"></meta>
+    <title>index</title>
+</head>
+<link th:href="@{/bootstrap/css/bootstrap3.3.7.min.css}" href="../static/bootstrap/css/bootstrap3.3.7.min.css" rel="stylesheet"/>
+<script th:src="@{/jquery/version/jquery-1.12.4.min.js}" src="../static/jquery/version/jquery-1.12.4.min.js" type="text/javascript"></script>
+<script th:src="@{/jquery/echarts.js}" src="../static/jquery/echarts.js" type="text/javascript"></script>
+<script th:src="@{/bootstrap/js/bootstrap3.3.7.min.js}" src="../static/bootstrap/js/bootstrap3.3.7.min.js" type="text/javascript"></script>
+<body>
+
+<div class="col-md-offset-10">
+    <button type="button" class="btn btn-info" id ="addbutn"><span class="glyphicon glyphicon-plus" aria-hidden="true">添加员工</span></button>
+    <button type="button" class="btn btn-info" id ="addbutnDept"><span class="glyphicon glyphicon-plus" aria-hidden="true">添加部门</span></button>
+
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead>
+        <tr>
+            <td>
+                员工姓名
+            </td>
+            <td>
+                员工性别
+            </td>
+            <td>
+                员工邮箱
+            </td>
+            <td>
+              员工部门
+            </td>
+            <td>
+                操作
+            </td>
+        </tr>
+        </thead>
+        <tbody >
+        <tr th:each="emp : ${empList}">
+            <input type="hidden"  id="empId" th:value="${emp.empId}"/>
+            <td th:text="${emp.empName}">
+                tom
+            </td>
+            <td th:text="${emp.empGender=='1'?'男':'女'}">
+                男
+            </td>
+            <td th:text="${emp.empEmail}">
+                tom@bonc.com.cn
+            </td>
+            <td th:text="${emp.dept.deptName}">
+                测试
+            </td>
+            <td>
+                <button type="button" class="btn btn-success" th:onclick="'javascript:updateEmp('+${emp.empId}+');'"><span class="glyphicon glyphicon-check" aria-hidden="true">修改</span></button>
+                <button type="button" class="btn btn-danger " th:onclick="'javascript:delEmp('+${emp.empId}+');'"> <span class="glyphicon glyphicon-remove" aria-hidden="true">删除</span></button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="col-md-2">
+        <p>总<span th:text="${empinfo.total}"></span>条记录，共<span th:text="${empinfo.pages}"></span>页</p>
+    </div>
+    <nav aria-label="Page navigation" class="col-md-offset-9">
+        <ul class="pagination">
+            <li id="previous">
+                <a href="#" aria-label="Previous" th:onclick="'javascript:preInfo('+${empinfo.isFirstPage}+','+${empinfo.pageNum}+');'" >
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <li><a class="test" th:each="id :${empinfo.navigatepageNums.length >5?{1,2,3,4,5}:empinfo.navigatepageNums}" th:text="${id}" th:onclick="'javascript:goInfo('+${id}+');'">1</a></li>
+
+            <li id="next">
+                <a href="#" aria-label="Next" th:onclick="'javascript:nextInfo('+${empinfo.isLastPage}+','+${empinfo.pageNum}+');'">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+<div id="main" style="width: 45%;height:400px; display: block;float: left"></div>
+<div id="zhuxing" style="width: 45%;height:400px; display: block;float: left"></div>
+<div id="zhexian" style="width: 45%;height:400px; display: block;float: left"></div>
+<div id="hunhe" style="width: 45%;height:400px; display: block;float: left"></div>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">添加员工信息</h4>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <form>
+                    <div class="form-group ">
+                        <label for="empname">员工姓名：</label>
+                        <input type="text" class="form-control" id="empname" placeholder="请输入员工姓名"/>
+                    </div>
+                    <div class="form-group ">
+                        <label for="empgender">员工姓别：</label>
+                        <select class="form-control" id="empgender" >
+                            <option value ="1">男</option>
+                            <option value ="0">女</option>
+                        </select>
+                    </div>
+                    <div class="form-group ">
+                        <label for="empemail">员工邮箱：</label>
+                        <input type="text" class="form-control" id="empemail" placeholder="请输入员工邮箱"/>
+                    </div>
+                    <div class="form-group ">
+                        <label for="empdept">员工部门：</label>
+                        <select class="form-control" id="empdept" >
+                            <option th:each="dept : ${deptList}" th:value="${dept.deptId}" th:text="${dept.deptName}" ></option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default closeButn"  data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="submitButn">提交</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+<div class="modal fade" id="addDept" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabe2">添加部门信息</h4>
+            </div>
+            <div class="modal-body" id="modal-body2">
+                <form>
+                    <div class="form-group ">
+                        <label for="deptName">部门名称：</label>
+                        <input type="text" class="form-control" id="deptName" placeholder="请输入部门名称"/>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default closeButn" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="insertDeptButn">提交</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+<div class="modal fade" id="updateEmp" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabe3">修改员工信息</h4>
+            </div>
+            <div class="modal-body" id="modal-body3">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default closeButn" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="submitUpdateEmpBtn">提交</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+
+</body>
+<script type="text/javascript">
+    $(function () {
+        $("#addbutn").click(function(){
+            $('#myModal').modal('show');
+        });
+
+        $("#addbutnDept").click(function(){
+            $("#addDept").modal('show');
+        });
+
+        $("#submitButn").click(function(){
+            var empName = $("#empname").val();
+            var empEmail = $("#empemail").val();
+            var empGender = $("#empgender").val();
+            var empDept = $("#empdept").val();
+            var data = {'empName':empName,
+                'empEmail':empEmail,
+                'empGender':empGender,
+                'empDept':empDept
+            };
+            console.log(data)
+            $.ajax({
+                url: "/insertEmp",
+                type: "post",
+                dataType: "json",
+                data: data,
+                async: false,
+                success: function (data) {
+                    if (data =="1") {
+                        $("#submitButn").hide();
+                        $('#modal-body').html('<h3>添加成功！</h3>');
+                    }
+                }
+            });
+        });
+
+        $('#insertDeptButn').click(function () {
+            var deptname = $("#deptName").val();
+            var data = {"deptname":deptname};
+            $.ajax({
+                url: "/insertDept",
+                type: "post",
+                dataType: "json",
+                data: data,
+                async: false,
+                success: function (data) {
+                    if (data == '1') {
+                        $('#modal-body2').html('<h3>添加成功！</h3>');
+                        $(this).hide();
+                    }
+                }
+            });
+        });
+
+        $(".closeButn").click(function () {
+            var curWwwPath=window.document.location.href;
+            location.href=curWwwPath;
+        });
+
+        $("#submitUpdateEmpBtn").click(function () {
+            var empId = $("#empidU").val();
+            var empName = $("#empnameU").val();
+            var empEmail = $("#empemailU").val();
+            var empGender = $("#empgenderU").val();
+            var empDept = $("#empdeptU").val();
+            var data = {'empName':empName,
+                'empEmail':empEmail,
+                'empGender':empGender,
+                'empDept':empDept,
+                 'empId':empId
+        };
+            console.log(data)
+            $.ajax({
+                url: "/updateSubEmp",
+                type: "post",
+                dataType: "json",
+                data: data,
+                async: false,
+                success: function (data) {
+                    if (data =="1") {
+                        $("#submitUpdateEmpBtn").hide();
+                        $('#modal-body3').html('<h3>更新成功！</h3>');
+                    }
+                }
+            });
+        });
+
+    })
+
+
+    function updateEmp( empId) {
+        var data = {"empId":empId};
+        $.ajax({
+            url: "/updateEmp",
+            type: "post",
+            dataType: "json",
+            data: data,
+            async: false,
+            success: function (data) {
+                console.log(data);
+                $("#updateEmp").modal("show");
+                $("#modal-body3").empty().append(
+                    '<form>'+
+                    '<div class="form-group">'+
+                    '<label for="empnameU">员工姓名：</label>'+
+                    '<input type="text" class="form-control" id="empnameU" value="' +data.empName+'"/>'+
+                    '<input type="hidden" class="form-control" id="empidU" value="' +data.empId+'"/>'+
+                    '</div><div class="form-group">'+
+                    '<label for="empgenderU">员工姓别：</label>'+
+                    '<select class="form-control" id="empgenderU" >'+
+                    '<option value ="1" selected="'+data.empGender+'=='+1+'?'+true+':'+false+'">男</option>'+
+                    '<option value ="0">女</option>'+
+                    '</select>'+
+                    '</div>'+
+                    '<div class="form-group ">'+
+                    '<label for="empemailU">员工邮箱：</label>'+
+                    '<input type="text" class="form-control" id="empemailU" value="'+data.empEmail+'"/>'+
+                    '</div>'+
+                    '<div class="form-group ">'+
+                    '<label for="empdeptU">员工部门：</label>'+
+                    '<select class="form-control" id="empdeptU" >'+
+                    '<option th:each="dept : ${deptList}" th:value="${dept.deptId }" th:text="${dept.deptName}" th:selected="${dept.deptName =='+data.dept.deptName+'?'+true+':'+false+' }"></option>'+
+                    '</select>'+
+                    '</div>'+
+                    '</form>'
+                );
+
+            }
+        });
+    }
+
+
+    function delEmp(empId) {
+        var data = {"empId":empId};
+        console.log(data)
+        $.ajax({
+            url: "/delEmp",
+            type: "post",
+            dataType: "json",
+            data: data,
+            async: false,
+            success: function (data) {
+                if (data == '1') {
+                    location.href="/findAll";
+                }
+            }
+        });
+    }
+    function preInfo(bool,pageNum) {
+        if(bool == false){
+            pageNum = pageNum-1;
+        }
+        location.href="/goPage/"+pageNum;
+    }
+
+    function nextInfo(bool,pageNum) {
+        if(bool == false){
+            pageNum = pageNum+1;
+        }
+     location.href="/goPage/"+pageNum;
+    }
+    function goInfo(pageNum) {
+        location.href="/goPage/"+pageNum;
+    }
+
+
+    //Echarts
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'));
+    var myChart2 = echarts.init(document.getElementById('zhuxing'));
+    // 指定图表的配置项和数据
+
+    // 使用刚指定的配置项和数据显示图表。
+    //myChart.setOption(option);
+    myChart.setOption({
+
+        title: {
+            text: '人员分布图'
+        },
+        tooltip: {},
+        legend: {
+            data:[]
+        },
+        xAxis: {
+            data: []
+        },
+        yAxis: {
+            name: '次数/n'
+        },
+        series: [{
+            name: '次数/n',
+            type: 'bar',
+            data: []
+        }]
+    });
+    myChart2.setOption({
+        title: {
+            text: '测试饼图'
+        },
+        legend: {
+            orient: 'vertical',
+            x: 'right',
+            data:['智慧短信','智慧极目','旅游产品','APP指数','终端指数'],
+            color:['#f79528','#f6ea3e','#64b244','#11aaca','#3f5ca8']
+        },
+         series : [
+         {
+             roseType: 'angle',
+             name: '出现次数',
+             type: 'pie',
+             radius: ['85%','30%'],
+             itemStyle: {
+             normal: {
+                 label:{
+                     show:true,
+                     formatter:'{b} : {c} ({d}%)'
+                            },
+                         labelLine:{show:true}},
+                         emphasis: {
+                                 label: {
+                                 show: true,
+                                 formatter: "{b}\n{c} ({d}%)",
+                                     formatter : function(a){
+                                         myChart.getTitle()
+                                     },
+                                 position: 'center',
+                                 textStyle: {
+                                 fontSize: '30',
+                                 fontWeight: 'bold'
+                                            }
+                                         }
+                                     }
+                        },
+         data:[ ]
+         }]
+    });
+    $.getJSON('http://localhost:8089/getData',function(data){
+        console.log(data)
+        myChart.setOption({
+
+            series: [{
+                // 根据名字对应到相应的系列
+                name: '',
+                data: data
+            }]
+        });
+        myChart2.setOption({
+
+            series: [{
+                // 根据名字对应到相应的系列
+                name: '',
+                data: data
+            }]
+        });
+
+        var list ="";
+        console.log(data.length)
+        $.each(data, function(i,item){
+            if( i != data.length - 1){
+                list = list + item.name + "," ;
+            }else{
+                list = list + item.name   ;
+            }
+        });
+           var a = list.split(',');
+
+           console.log(a)
+        myChart3.setOption({
+            series: [{
+                // 根据名字对应到相应的系列
+                name: '',
+                data: data
+            }],
+            xAxis: {       //直角坐标系 grid 中的 x 轴
+                data: a
+
+            }
+        });
+
+        myChart4.setOption({
+            series: [{
+                // 根据名字对应到相应的系列
+                name: '柱形图',
+                data: data
+            },
+                {
+                    // 根据名字对应到相应的系列
+                    name: '折线',
+                    data: data
+                }
+            ],
+            xAxis: {       //直角坐标系 grid 中的 x 轴
+                data: a
+
+            }
+        });
+
+        myChart3.on('click', function (handler,context){
+            console.dir(handler);
+            console.dir(context);
+            //获取节点点击的数组序号
+            var arrayIndex = handler.dataIndex;
+            //获取数据
+            var name  = a[arrayIndex];
+
+            $.ajax({
+                type: "POST",
+                url: "/getDataByName",
+                contentType: "application/json",
+                data: name,
+                dataType: "json",
+                success: function (result) {
+                    console.log(result)
+                    alert(result.empName+"--->"+result.empEmail + "--->"+result.dept.deptName);
+                }
+            });
+        });
+
+    });
+//折线图
+
+    var myChart3 = echarts.init(document.getElementById('zhexian'));
+
+    //参数设置
+
+    myChart3.setOption({
+        title: {      //标题组件
+
+            text: '测试折线图'
+        },
+
+        tooltip: {    //提示框组件
+            trigger: 'axis'
+        },
+
+        legend: {     //图例组件
+            data: ['人员分布量']
+        },
+
+        grid: {       //直角坐标系内绘图网格
+
+            left: '3%',
+
+            right: '4%',
+
+            bottom: '3%',
+
+            containLabel: true
+
+        },
+
+        toolbox: {     //工具栏
+
+            feature: {
+
+                saveAsImage: {}
+
+            }
+
+        },
+
+        xAxis: {       //直角坐标系 grid 中的 x 轴
+
+            type: 'category',
+
+            boundaryGap: false,
+
+            data: []
+
+        },
+
+        yAxis: {       //直角坐标系 grid 中的 y 轴
+            name: '次数/n',
+            type: 'value'
+
+        },
+
+        series: [      //系列列表
+
+            {
+
+                name: '人员分布量',
+
+                type: 'line',
+
+                stack: '总量',
+
+                data: []
+
+            }
+
+        ]
+
+    });
+
+//折线和柱形图混合
+    var myChart4 = echarts.init(document.getElementById('hunhe'));
+    myChart4.setOption({
+
+        tooltip: {
+            trigger: 'axis'
+        },
+        legend: {
+            data:['柱形图', '折线']
+        },
+        xAxis: [
+            {
+                type: 'category',
+                data: []
+            }
+        ],
+            yAxis:
+        [
+            {
+                type: 'value',
+                name: '次数/n',
+               /* min: 0,
+                max: 250,
+                interval: 50,*/
+                axisLabel: {
+                    formatter: '{value} '
+                }
+            }
+        ],
+            series:
+        [
+
+            {
+                name: '柱形图',
+                type: 'bar',
+                /*设置柱状图颜色*/
+            itemStyle: {
+                normal: {
+                    color: function(params) { // build a color map as your need.
+                        var colorList = [
+                            '#fe4f4f','#fead33','#feca2b',
+                            '#fef728'/*,'#c5ee4a', '#87ee4a','#46eda9','#47e4ed','#4bbbee','#7646d8',
+                            '#924ae2'
+                            , '#C6E579', '#F4E001','#F0805A','#26C0C0'*/
+                        ];
+                        return colorList[params.dataIndex]
+                    },
+                    /*信息显示方式*/
+                    label: {
+                        show: true,
+                        position: 'top',
+                        formatter: '{b}\n{c}'
+                    }
+                }
+            },
+            data:[]
+        },
+        {
+            name:'折线',
+            type:'line',
+            smooth: true,
+            symbolSize: true,
+            itemStyle : {
+                /*设置折线颜色*/
+                normal : {
+                     color:'#c4cddc'
+                }
+            },
+            data:[]
+        }
+    ]
+
+});
+</script>
+</html>

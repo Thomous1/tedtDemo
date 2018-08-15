@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bonc.dao.EmployeeDao">
+    <select id="getEmpById" resultMap="empResultMap" parameterType="integer">
+		SELECT
+			a.dept_id,
+			a.emp_email,
+			a.emp_gender,
+			a.emp_name,
+			a.emp_id,
+			b.dept_name
+		FROM
+			employee a,
+			department b
+		WHERE
+			a.dept_id = b.dept_id
+		AND a.emp_id = #{id};
+    </select>
+
+	<select id="findAll" resultMap="empResultMap">
+		SELECT
+			a.dept_id,
+			a.emp_email,
+			a.emp_gender,
+			a.emp_name,
+			a.emp_id,
+			b.dept_name
+		FROM
+			employee a,
+			department b
+		WHERE
+			a.dept_id = b.dept_id
+		ORDER BY a.emp_id
+	</select>
+	<resultMap type="com.bonc.domain.Employee" id="empResultMap">
+		         <id property="empId" column="emp_id"/>
+		         <result property="empName" column="emp_name"/>
+		         <result property="empEmail" column="emp_email"/>
+		         <result property="empGender" column="emp_gender"/>
+		         <association property="dept" javaType="com.bonc.domain.Department">
+		            <id property="deptId" column="dept_id"/>
+		            <result property="deptName" column="dept_name"/>
+		        </association>
+	</resultMap>
+
+	<select id="findDeptByName" resultType="com.bonc.domain.Department" parameterType="string">
+		SELECT
+			b.dept_id,
+			b.dept_name
+		FROM
+			department b
+		where dept_name=#{name};
+	</select>
+
+	<select id="getDeptById" resultType="com.bonc.domain.Department" parameterType="integer">
+		SELECT
+		b.dept_id,
+		b.dept_name
+		FROM
+		department b
+		where dept_id=#{id};
+	</select>
+
+	<insert id="insertEmp" parameterType="com.bonc.domain.Employee">
+		INSERT INTO employee (
+			emp_email,
+			emp_gender,
+			emp_name,
+			dept_id
+		)
+		VALUES
+			(
+				#{empEmail},
+				#{empGender},
+				#{empName},
+				#{dept.deptId}
+			)
+	</insert>
+
+	<select id="findAllDept" resultType="com.bonc.domain.Department" >
+	SELECT
+	b.dept_id,
+	b.dept_name
+	FROM
+	department b
+</select>
+	<select id="getDataByName" resultMap="empResultMap" parameterType="string">
+		SELECT
+			*
+		FROM
+			`employee` e,
+			department d
+		WHERE
+			e.emp_name = #{name}
+			AND e.dept_id = d.dept_id
+		LIMIT 1;
+	</select>
+
+	<select id="getData" resultType="java.util.Map" >
+		SELECT emp_name AS  "name" ,COUNT(0) as  "value"  FROM `employee` GROUP BY emp_name
+	</select>
+	<insert id="insertDept" parameterType="com.bonc.domain.Department">
+		INSERT INTO department (
+			dept_name
+		)
+		VALUES
+		(
+			#{deptName}
+		)
+	</insert>
+	
+	<delete id="delEmp" parameterType="integer">
+		DELETE
+		FROM
+			employee
+		WHERE
+			emp_id = #{id}
+	</delete>
+	
+	<update id="updateEmp" parameterType="com.bonc.domain.Employee">
+		UPDATE employee a
+			<set>
+				<if test="empName != null">
+					a.emp_name = #{empName},
+				</if>
+				<if test="dept.deptId != null">
+					a.dept_id =#{dept.deptId},
+				</if>
+				<if test="empEmail != null">
+					a.emp_email =#{empEmail},
+				</if>
+				<if test="empGender != null">
+					a.emp_gender =#{empGender}
+				</if>
+			</set>
+		WHERE
+			a.emp_id =#{empId}
+	</update>
+</mapper>
