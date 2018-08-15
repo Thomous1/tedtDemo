@@ -37,6 +37,7 @@ public class EmployeeController {
     public String test(){
         return "test";
     }
+
     @RequestMapping(value = "/getTableData",method = RequestMethod.POST)
     @ResponseBody
     public PageInfo<Employee> getTableData(@RequestParam Map<String, Object> params){
