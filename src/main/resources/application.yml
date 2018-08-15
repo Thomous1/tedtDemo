@@ -10,11 +10,26 @@ spring:
   devtools:
     restart:
       enabled: true
+  #redis配置
+  redis:
+    host: 192.168.253.192
+    port: 6379
+    pool:
+      max-active: 20
+      max-idle: 8
+      min-idle: 1
+      max-wait: 60000
+    database: 0
  # data:
   #  mongodb:
    #   uri: mongodb://localhost:27017/test
 mybatis: 
   configuration:
     map-underscore-to-camel-case: true
+  #  log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   mapper-locations: mybatis/**/*Mapper.xml
+
+logging:
+  level:
+    com.bonc.dao: DEBUG
 

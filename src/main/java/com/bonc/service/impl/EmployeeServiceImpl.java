@@ -6,6 +6,8 @@ package com.bonc.service.impl;
         import com.bonc.domain.Employee;
         import com.bonc.service.EmployeeService;
         import org.springframework.beans.factory.annotation.Autowired;
+        import org.springframework.cache.annotation.CacheConfig;
+        import org.springframework.cache.annotation.Cacheable;
         import org.springframework.stereotype.Service;
 
         import java.util.List;
@@ -15,6 +17,7 @@ package com.bonc.service.impl;
  * Created by 王小浪 on 2018/5/23.
  */
 @Service
+@CacheConfig(cacheNames = "emp")
 public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
@@ -25,7 +28,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeDao.getEmpById(id);
     }
 
-    @Override
+    @Cacheable
     public List<Employee> findAll() {
         return employeeDao.findAll();
     }

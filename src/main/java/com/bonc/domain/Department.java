@@ -1,6 +1,8 @@
 package com.bonc.domain;
 
-public class Department {
+import java.io.Serializable;
+
+public class Department implements Serializable {
     private Integer deptId;
     private String deptName;
 
