@@ -3,7 +3,6 @@ package com.bonc.domain;
 import java.io.Serializable;
 import lombok.Data;
 
-
 @Data
 public class Employee implements Serializable{
     private Integer empId;
