@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head th:include="layout/include :: header"></head>
+<link th:href="@{/css/talkingdata.css}" href="../static/css/talkingdata.css" rel="stylesheet"/>
+<body  >
+<div>
+<div class="report-left">
+    <ul>
+        <li>
+            <a href="/goSupport" title="全部资源">全部资源</a>
+        </li>
+        <li>
+            <a href="/goSupport3/产品白皮书" title="行业报告">行业报告</a>
+        </li>
+        <li>
+            <a href="/goSupport3/行业白皮书" title="行业白皮书">行业白皮书</a>
+        </li>
+        <li>
+            <a href="/goSupport3/专题报告" title="专题报告">专题报告</a>
+        </li>
+        <li>
+            <a href="/goSupport3/行业观点" title="行业观点">行业观点</a>
+        </li>
+    </ul>
+</div>
+
+    <div class="content-data-report clearfix">
+        <div class="hot-label">
+            <ul>
+                <li>
+                    <a href="/goSupport" title="全部">全部</a>
+                </li>
+                <li>
+                    <a href="/goSupport/tll" title="T11">T11</a>
+                </li>
+                <li>
+                    <a href="/goSupport/travel" title="旅游">旅游</a>
+                </li>
+                <li>
+                    <a href="/goSupport/fangchan" title="房产">房产</a>
+                </li>
+                <li>
+                    <a href="/goSupport/jinrong" title="金融">金融</a>
+                </li>
+
+            </ul>
+        </div>
+
+        <div class="reports-list">
+            <div class="download-book" th:each="talk : ${talkingData}">
+                <b>
+                    <a href="#" th:title="${talk.talkDesc}" title="nihao">
+                        <img th:src="${talk.talkName}" src="http://doc.talkingdata.com/reports/archives/cover/【T112017-智能金融分会场】营销闭环驱动业务增长" width="102" height="128" alt="【T112017-智能金融分会场】营销闭环驱动业务增长" title="【T112017-智能金融分会场】营销闭环驱动业务增长"/></a>
+                </b>
+                <div class="operate-book">
+                    <em><a href="#" title="【T112017-智能金融分会场】营销闭环驱动业务增长">【T112017-智能金融分会场】营销闭环驱动业务增长</a></em>
+                    <p th:text="${talk.talkDate}">2017-09-20</p>
+
+                    <a class="button" href="#" title="【T112017-智能金融分会场】营销闭环驱动业务增长">立刻查看</a>
+                    <span>
+                  <img src="http://jic2.talkingdata.com/observatory/mi/images/download-btn-shadow.png" alt="【T112017-智能金融分会场】营销闭环驱动业务增长" title="【T112017-智能金融分会场】营销闭环驱动业务增长" />
+                </span>
+                </div>
+            </div>
+            <div class = "pageinfo" >
+
+                <nav aria-label="Page navigation" class="col-md-offset-9 pageinfo">
+                    <ul class="pagination">
+                        <li id="previous">
+                            <a href="#" aria-label="Previous" th:onclick="'javascript:preInfo('+${pageInfo.isFirstPage}+','+${pageInfo.pageNum}+');'" >
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li><a class="test" th:each="id :${pageInfo.navigatepageNums.length >5?{1,2,3,4,5}:pageInfo.navigatepageNums}" th:text="${id}" th:onclick="'javascript:goInfo('+${id}+');'">1</a></li>
+
+                        <li id="next">
+                            <a href="#" aria-label="Next" th:onclick="'javascript:nextInfo('+${pageInfo.isLastPage}+','+${pageInfo.pageNum}+');'">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+</body>
+
+</html>

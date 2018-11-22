@@ -1,7 +1,12 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head th:include="layout/include :: header"></head>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<title>王小浪不叫王小浪</title>
+<head th:include="layout/include :: header">
+</head>
+
 <body>
+
 
 <div class="col-md-offset-10">
     <button type="button" class="btn btn-info" id ="addbutn"><span class="glyphicon glyphicon-plus" aria-hidden="true">添加员工</span></button>
@@ -163,6 +168,30 @@
 </body>
 <script type="text/javascript">
     $(function () {
+        //判断用户是否在浏览当前页面
+        var hiddenProperty = 'hidden' in document ? 'hidden' :
+            'webkitHidden' in document ? 'webkitHidden' :
+                'mozHidden' in document ? 'mozHidden' :
+                    null;
+        var visibilityChangeEvent = hiddenProperty.replace(/hidden/i, 'visibilitychange');
+        var onVisibilityChange = function(){
+            if (!document[hiddenProperty]) {
+               document.title="王小浪不叫王小浪";
+            }else{
+                document.title="嘛去了？？你快回来！";
+            }
+        }
+        document.addEventListener(visibilityChangeEvent, onVisibilityChange);
+
+
+
+
+
+
+
+
+
+
         $("#addbutn").click(function(){
             $('#myModal').modal('show');
         });

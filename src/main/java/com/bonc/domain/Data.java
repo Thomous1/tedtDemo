@@ -1,9 +1,11 @@
 package com.bonc.domain;
 
+import java.io.Serializable;
+
 /**
  * Created by 王小浪 on 2018/8/1.
  */
-public class Data {
+public class Data implements Serializable{
     private  String name;
     private  Integer value;
 

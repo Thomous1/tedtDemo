@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bonc.dao.UserDao">
+
+    <select id="getUserByUserName" resultType="com.bonc.domain.User" parameterType="string">
+		select * from u_user where nickname = #{nickename}
+    </select>
+
+
+	<update id="updateById" parameterType="com.bonc.domain.User">
+		UPDATE u_user a
+			SET
+	a.last_login_time =#{last_login_time}
+		WHERE
+			a.id =#{id}
+	</update>
+	
+	<select id="findAllTalking" resultType="com.bonc.domain.TalkingData">
+		select  * from talkingdata
+	</select>
+
+	<select id="findAllTalking2" resultType="com.bonc.domain.TalkingData" parameterType="string">
+		select  * from talkingdata WHERE talk_type = #{type}
+	</select>
+
+	<select id="findAllTalking3" resultType="com.bonc.domain.TalkingData" parameterType="string">
+		select  * from talkingdata WHERE talk_pro = #{pro}
+	</select>
+</mapper>
